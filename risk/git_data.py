@@ -1,5 +1,6 @@
 import subprocess
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass 
 class FileChange:
@@ -7,7 +8,17 @@ class FileChange:
     added: int 
     deleted: int 
 
-
+@dataclass
+class CommitInfo:
+    sha: str 
+    author: str
+    timestamp: datetime
+#return the sha, author, and timestamp of a commit
+def get_commit_info(repo: str, ref: str) -> CommitInfo:
+    output = run_git(repo, "log", "-1", "--format=%H%n%an%n%aI", ref)
+    sha, author, time_text = output.splitlines()
+    timestamp = datetime.fromisoformat(time_text)
+    
 
 #return each file changed between base and head with line counts
 def get_changed_files(repo: str, base: str, head: str) -> list[FileChange]:
